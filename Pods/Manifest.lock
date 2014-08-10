@@ -1,0 +1,10 @@
+PODS:
+  - UIDevice-SupportedDevices (1.0.1)
+
+DEPENDENCIES:
+  - UIDevice-SupportedDevices
+
+SPEC CHECKSUMS:
+  UIDevice-SupportedDevices: 6b3dc841285444aeb41ab812bf20b7a205ba091a
+
+COCOAPODS: 0.33.1
