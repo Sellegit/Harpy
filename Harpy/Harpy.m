@@ -217,70 +217,75 @@ NSString * const HarpyLanguageSpanish = @"es";
 
 - (void)showAlertWithAppStoreVersion:(NSString *)currentAppStoreVersion
 {
-    // Reference App's name
-    NSString *appName = ([self appName]) ? [self appName] : [[[NSBundle mainBundle] infoDictionary] objectForKey:(NSString *)kCFBundleNameKey];
-    
-    // Force localization if _forceLanguageLocalization is set
-    NSString *updateAvailableMessage, *newVersionMessage, *updateButtonText, *nextTimeButtonText, *skipButtonText;
-    if ([self forceLanguageLocalization]) {
-        updateAvailableMessage = HARPY_FORCED_LOCALIZED_STRING(@"Update Available");
-        newVersionMessage = [NSString stringWithFormat:HARPY_FORCED_LOCALIZED_STRING(@"A new version of %@ is available. Please update to version %@ now."), appName, currentAppStoreVersion];
-        updateButtonText = HARPY_FORCED_LOCALIZED_STRING(@"Update");
-        nextTimeButtonText = HARPY_FORCED_LOCALIZED_STRING(@"Next time");
-        skipButtonText = HARPY_FORCED_LOCALIZED_STRING(@"Skip this version");
-    } else {
-        updateAvailableMessage = HARPY_LOCALIZED_STRING(@"Update Available");
-        newVersionMessage = [NSString stringWithFormat:HARPY_LOCALIZED_STRING(@"A new version of %@ is available. Please update to version %@ now."), appName, currentAppStoreVersion];
-        updateButtonText = HARPY_LOCALIZED_STRING(@"Update");
-        nextTimeButtonText = HARPY_LOCALIZED_STRING(@"Next time");
-        skipButtonText = HARPY_LOCALIZED_STRING(@"Skip this version");
-    }
+    @try {
+        // Reference App's name
+        NSString *appName = ([self appName]) ? [self appName] : [[[NSBundle mainBundle] infoDictionary] objectForKey:(NSString *)kCFBundleNameKey];
+        
+        // Force localization if _forceLanguageLocalization is set
+        NSString *updateAvailableMessage, *newVersionMessage, *updateButtonText, *nextTimeButtonText, *skipButtonText;
+        if ([self forceLanguageLocalization]) {
+            updateAvailableMessage = HARPY_FORCED_LOCALIZED_STRING(@"Update Available");
+            newVersionMessage = [NSString stringWithFormat:HARPY_FORCED_LOCALIZED_STRING(@"A new version of %@ is available. Please update to version %@ now."), appName, currentAppStoreVersion];
+            updateButtonText = HARPY_FORCED_LOCALIZED_STRING(@"Update");
+            nextTimeButtonText = HARPY_FORCED_LOCALIZED_STRING(@"Next time");
+            skipButtonText = HARPY_FORCED_LOCALIZED_STRING(@"Skip this version");
+        } else {
+            updateAvailableMessage = HARPY_LOCALIZED_STRING(@"Update Available");
+            newVersionMessage = [NSString stringWithFormat:HARPY_LOCALIZED_STRING(@"A new version of %@ is available. Please update to version %@ now."), appName, currentAppStoreVersion];
+            updateButtonText = HARPY_LOCALIZED_STRING(@"Update");
+            nextTimeButtonText = HARPY_LOCALIZED_STRING(@"Next time");
+            skipButtonText = HARPY_LOCALIZED_STRING(@"Skip this version");
+        }
 
-    // Initialize UIAlertView
-    UIAlertView *alertView;
-    
-    // Show Appropriate UIAlertView
-    switch ([self alertType]) {
-            
-        case HarpyAlertTypeForce: {
-            
-            alertView = [[UIAlertView alloc] initWithTitle:updateAvailableMessage
-                                                   message:newVersionMessage
-                                                  delegate:self
-                                         cancelButtonTitle:updateAvailableMessage
-                                         otherButtonTitles:nil, nil];
-            
-        } break;
-            
-        case HarpyAlertTypeOption: {
-            
-           alertView = [[UIAlertView alloc] initWithTitle:updateAvailableMessage
-                                                  message:newVersionMessage
-                                                 delegate:self
-                                        cancelButtonTitle:nextTimeButtonText
-                                        otherButtonTitles:updateButtonText, nil];
-            
-        } break;
-            
-        case HarpyAlertTypeSkip: {
-            
-            // Store currentAppStoreVersion in case user pushes skip
-            [[NSUserDefaults standardUserDefaults] setObject:currentAppStoreVersion forKey:HARPY_DEFAULT_SKIPPED_VERSION];
-            [[NSUserDefaults standardUserDefaults] synchronize];
-            
-            alertView = [[UIAlertView alloc] initWithTitle:updateAvailableMessage
-                                                   message:newVersionMessage
-                                                  delegate:self
-                                         cancelButtonTitle:skipButtonText
-                                         otherButtonTitles:updateButtonText, nextTimeButtonText, nil];
-            
-        } break;
-    }
-    
-    [alertView show];
+        // Initialize UIAlertView
+        UIAlertView *alertView;
+        
+        // Show Appropriate UIAlertView
+        switch ([self alertType]) {
+                
+            case HarpyAlertTypeForce: {
+                
+                alertView = [[UIAlertView alloc] initWithTitle:updateAvailableMessage
+                                                       message:newVersionMessage
+                                                      delegate:self
+                                             cancelButtonTitle:updateAvailableMessage
+                                             otherButtonTitles:nil, nil];
+                
+            } break;
+                
+            case HarpyAlertTypeOption: {
+                
+               alertView = [[UIAlertView alloc] initWithTitle:updateAvailableMessage
+                                                      message:newVersionMessage
+                                                     delegate:self
+                                            cancelButtonTitle:nextTimeButtonText
+                                            otherButtonTitles:updateButtonText, nil];
+                
+            } break;
+                
+            case HarpyAlertTypeSkip: {
+                
+                // Store currentAppStoreVersion in case user pushes skip
+                [[NSUserDefaults standardUserDefaults] setObject:currentAppStoreVersion forKey:HARPY_DEFAULT_SKIPPED_VERSION];
+                [[NSUserDefaults standardUserDefaults] synchronize];
+                
+                alertView = [[UIAlertView alloc] initWithTitle:updateAvailableMessage
+                                                       message:newVersionMessage
+                                                      delegate:self
+                                             cancelButtonTitle:skipButtonText
+                                             otherButtonTitles:updateButtonText, nextTimeButtonText, nil];
+                
+            } break;
+        }
+        
+        [alertView show];
 
-    if([self.delegate respondsToSelector:@selector(harpyDidShowUpdateDialog)]){
-        [self.delegate harpyDidShowUpdateDialog];
+        if([self.delegate respondsToSelector:@selector(harpyDidShowUpdateDialog)]){
+            [self.delegate harpyDidShowUpdateDialog];
+        }
+    }
+    @catch (NSException *e) {
+        NSLog(@"Exception: %@", e);
     }
 }
 
